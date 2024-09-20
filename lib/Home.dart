@@ -18,7 +18,8 @@ class _Home extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color(0xff121312),
+        elevation: 8,
+        backgroundColor: Color(0xff1A1A1A),
         currentIndex: selected_index,
         onTap: (index) {
           setState(() {
@@ -75,8 +76,7 @@ class _Home extends State<Home> {
         return WatchList(); // Page for settings
       default:
         return Center(
-            child: Text(
-                'Page not found')); // Default case in case of an unexpected index
+            child: Text('')); // Default case in case of an unexpected index
     }
   }
 }
