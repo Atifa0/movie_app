@@ -1,6 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 import 'More_Like_This.dart';
 
@@ -11,7 +12,7 @@ class MovieDetailScreen extends StatefulWidget {
   final String posterPath;
   final String releaseDate;
   final double rating;
-  final String runtime; // Movie duration
+  final String runtime;
   final List<String> actors;
 
   MovieDetailScreen({
@@ -33,14 +34,14 @@ class MovieDetailScreen extends StatefulWidget {
 class _MovieDetailScreenState extends State<MovieDetailScreen> {
   bool isLoading = true;
   String errorMessage = '';
-  List<dynamic> similarMovies = []; // To store the similar movies
-  List<String> genres = []; // To store the fetched genres
+  List<dynamic> similarMovies = [];
+  List<String> genres = [];
 
   @override
   void initState() {
     super.initState();
     fetchMovieDetails();
-    fetchSimilarMovies(); // Fetch similar movies
+    fetchSimilarMovies();
   }
 
   Future<void> fetchMovieDetails() async {
@@ -53,7 +54,6 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        // Get the genres from the API response
         setState(() {
           genres =
               List<String>.from(data['genres'].map((genre) => genre['name']));
@@ -104,10 +104,9 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
       appBar: AppBar(
         backgroundColor: Color(0xff121312),
         iconTheme: IconThemeData(color: Colors.white),
-        // Set the back arrow color to white
         title: Text(
           widget.title.isEmpty ? 'Loading...' : widget.title,
-          style: TextStyle(color: Colors.white), // Set the title color to white
+          style: TextStyle(color: Colors.white),
         ),
       ),
       body: Container(
@@ -128,8 +127,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                             widget.posterPath.isNotEmpty
                                 ? Image.network(
                                     'https://image.tmdb.org/t/p/w500${widget.posterPath}',
-                                    height:
-                                        400, // Increased height for the poster
+                                    height: 400,
                                     width: double.infinity,
                                     fit: BoxFit.cover,
                                   )
@@ -141,14 +139,12 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                             ),
                           ],
                         ),
-                        // Movie Title Below the Poster
                         Padding(
                           padding: EdgeInsets.all(16.0),
                           child: Text(
                             widget.title.isEmpty ? 'Loading...' : widget.title,
                             style: TextStyle(
-                              color: Colors
-                                  .white, // Ensure the movie title is white
+                              color: Colors.white,
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
@@ -160,12 +156,11 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                width: 120, // Adjusted width for the poster
+                                width: 120,
                                 child: widget.posterPath.isNotEmpty
                                     ? Image.network(
                                         'https://image.tmdb.org/t/p/w500${widget.posterPath}',
-                                        height:
-                                            180, // Adjusted height for the poster
+                                        height: 180,
                                         fit: BoxFit.cover,
                                       )
                                     : Container(
@@ -209,24 +204,20 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                                       ],
                                     ),
                                     SizedBox(height: 10),
-                                    // Displaying the fetched genres with new styling
                                     Wrap(
                                       spacing: 8.0,
                                       children: genres.map((genre) {
                                         return Chip(
                                           label: Text(
                                             genre,
-                                            style: TextStyle(
-                                                color: Colors
-                                                    .white), // Ensure text is visible
+                                            style:
+                                                TextStyle(color: Colors.white),
                                           ),
                                           backgroundColor: Color(0xff121312),
-                                          // Make the background dark
                                           shape: RoundedRectangleBorder(
                                             side: BorderSide(
                                                 color: Color(0xff514F4F),
                                                 width: 2),
-                                            // Outer border color
                                             borderRadius:
                                                 BorderRadius.circular(8),
                                           ),
@@ -278,11 +269,9 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                             ],
                           ),
                         ),
-                        SizedBox(height: 20), // Added space below the poster
-                        // Combined "More Like This" section with movie posters
+                        SizedBox(height: 20),
                         Container(
                           color: Color(0xFF282A28),
-                          // Background color for More Like This section
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Column(

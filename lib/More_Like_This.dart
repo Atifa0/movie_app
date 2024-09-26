@@ -9,7 +9,7 @@ class MoreLikeThisSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(top: 8.0), // Added padding for better spacing
+      padding: EdgeInsets.only(top: 8.0),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -18,13 +18,12 @@ class MoreLikeThisSection extends StatelessWidget {
             final String title = movie['title'] ?? '';
             final String releaseDate = movie['release_date'] ?? '';
             final double rating = movie['vote_average']?.toDouble() ?? 0.0;
-            final int movieId = movie['id'] ?? 0; // Get the movie ID
+            final int movieId = movie['id'] ?? 0;
 
             return Padding(
               padding: const EdgeInsets.only(right: 16.0),
               child: GestureDetector(
                 onTap: () {
-                  // Navigate to the Movie Detail Screen
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -36,9 +35,8 @@ class MoreLikeThisSection extends StatelessWidget {
                         releaseDate: releaseDate,
                         rating: rating,
                         runtime: 'N/A',
-                        // Pass 'N/A' for runtime
                         actors: [],
-                        genres: [], // Pass an empty list for actors
+                        genres: [],
                       ),
                     ),
                   );
@@ -48,7 +46,7 @@ class MoreLikeThisSection extends StatelessWidget {
                   year: releaseDate.split('-').first,
                   rating: rating.toString(),
                   posterPath: posterPath,
-                  runtime: 'N/A', // Placeholder for runtime
+                  runtime: 'N/A',
                 ),
               ),
             );
@@ -77,57 +75,54 @@ class MovieCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 110, // Reduced width for smaller cards
+      width: 110,
       margin: EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: Color(0xFF282A28), // Background color for the whole card
-        borderRadius: BorderRadius.circular(12), // Curved border
+        color: Color(0xFF282A28),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2), // Shadow color
+            color: Colors.black.withOpacity(0.2),
             spreadRadius: 2,
             blurRadius: 5,
-            offset: Offset(2, 3), // Shadow position
+            offset: Offset(2, 3),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Movie Poster with curved corners
           ClipRRect(
             borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
             child: Image.network(
               'https://image.tmdb.org/t/p/w500$posterPath',
-              height: 150, // Adjusted height for smaller cards
+              height: 150,
               width: double.infinity,
               fit: BoxFit.cover,
             ),
           ),
           SizedBox(height: 6),
-          // Movie Rating with yellow star
           Padding(
             padding: const EdgeInsets.all(6.0),
             child: Row(
               children: [
                 Icon(
                   Icons.star,
-                  color: Colors.yellow, // Yellow color for the star
-                  size: 18, // Size of the star
+                  color: Colors.yellow,
+                  size: 18,
                 ),
-                SizedBox(width: 4), // Space between star and rating
+                SizedBox(width: 4),
                 Text(
                   '$rating',
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white, // White text for contrast
+                    color: Colors.white,
                   ),
                 ),
               ],
             ),
           ),
-          // Movie Title
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6.0),
             child: Text(
@@ -135,13 +130,12 @@ class MovieCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: Colors.white, // White text for contrast
+                color: Colors.white,
               ),
-              overflow: TextOverflow.ellipsis, // Handle long titles
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           SizedBox(height: 4),
-          // Release Year and Duration in the same line
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6.0),
             child: Row(
@@ -151,14 +145,14 @@ class MovieCard extends StatelessWidget {
                   year,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.white, // White text for contrast
+                    color: Colors.white,
                   ),
                 ),
                 Text(
                   runtime,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.white, // White text for contrast
+                    color: Colors.white,
                   ),
                 ),
               ],
