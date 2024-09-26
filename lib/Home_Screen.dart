@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:movie_app/MovieDetails.dart';
@@ -11,8 +12,7 @@ class Home_Screen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<Home_Screen> {
-  final String apiKey =
-      '3393282c6b48f18ca19bcce45e903966'; // Replace with your TMDB API key
+  final String apiKey = '3393282c6b48f18ca19bcce45e903966';
   final String baseUrl = 'https://api.themoviedb.org/3';
 
   List popularMovies = [];
@@ -40,8 +40,7 @@ class _HomeScreenState extends State<Home_Screen> {
       setState(() {
         popularMovies = json.decode(response.body)['results'];
         if (popularMovies.isNotEmpty) {
-          featuredMovie = popularMovies[
-              0]; // Set the first popular movie as the featured movie
+          featuredMovie = popularMovies[0];
         }
       });
     } else {
@@ -78,7 +77,7 @@ class _HomeScreenState extends State<Home_Screen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff121312), // Set the background color
+      backgroundColor: Color(0xff121312),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,15 +85,11 @@ class _HomeScreenState extends State<Home_Screen> {
             if (featuredMovie != null)
               FeaturedMovieSection(movie: featuredMovie),
             SizedBox(height: 100),
-            // Added to move the Popular Movies section down
             CategorySection(title: 'New Releases', movies: upcomingMovies),
-            // Changed order here
             SizedBox(height: 20),
             CategorySection(title: 'Recommended', movies: topRatedMovies),
-            // Changed order here
             SizedBox(height: 20),
             CategorySection(title: 'Popular Movies', movies: popularMovies),
-            // Changed order here
           ],
         ),
       ),
@@ -111,7 +106,7 @@ class FeaturedMovieSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      clipBehavior: Clip.none, // To allow poster overflow
+      clipBehavior: Clip.none,
       children: [
         Container(
           height: 250,
@@ -131,7 +126,6 @@ class FeaturedMovieSection extends StatelessWidget {
             ),
           ),
         ),
-        // Play button in the center
         Center(
           child: Icon(
             Icons.play_circle_fill, // Example icon
@@ -139,18 +133,15 @@ class FeaturedMovieSection extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        // Small poster and text
         Positioned(
           left: 10,
           bottom: -70,
-          // Position the bottom half of the poster on the background
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Increased small poster size
               Container(
-                width: 150, // Increased width
-                height: 220, // Increased height
+                width: 150,
+                height: 220,
                 decoration: BoxDecoration(
                   boxShadow: [
                     BoxShadow(
@@ -169,10 +160,8 @@ class FeaturedMovieSection extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 10),
-              // Movie title and release year
               Padding(
                 padding: const EdgeInsets.only(top: 150),
-                // Adjusted to move the title down
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -187,10 +176,9 @@ class FeaturedMovieSection extends StatelessWidget {
                     SizedBox(height: 5),
                     Text(
                       '${movie['release_date']?.substring(0, 4) ?? 'Unknown'}',
-                      // Display only the year
                       style: TextStyle(
                         color: Colors.white70,
-                        fontSize: 16, // Slightly smaller font for release year
+                        fontSize: 16,
                       ),
                     ),
                   ],
@@ -214,18 +202,14 @@ class CategorySection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
-      // Add some margin between categories
       decoration: BoxDecoration(
-        color: Color(0xFF282A28), // Rectangle background color for the category
-        borderRadius:
-            BorderRadius.circular(10), // Rounded corners for the rectangle
+        color: Color(0xFF282A28),
+        borderRadius: BorderRadius.circular(10),
       ),
       padding: EdgeInsets.all(10),
-      // Padding inside the rectangle
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Category title
           Text(
             title,
             style: TextStyle(
@@ -236,15 +220,14 @@ class CategorySection extends StatelessWidget {
           ),
           SizedBox(height: 10),
           Container(
-            height: 250, // Adjusted height for the category section
+            height: 250,
             child: movies.isEmpty
                 ? Center(child: CircularProgressIndicator())
                 : ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: movies.length,
                     itemBuilder: (context, index) {
-                      return MovieCard(
-                          movie: movies[index]); // Changed card size here
+                      return MovieCard(movie: movies[index]);
                     },
                   ),
           ),
@@ -275,21 +258,17 @@ class MovieCard extends StatelessWidget {
               releaseDate: movie['release_date'] ?? 'Unknown release date',
               rating: (movie['vote_average'] as num?)?.toDouble() ?? 0.0,
               runtime: '',
-              // You can fetch runtime separately if required
               actors: [],
-              // Fetch actors if needed
-              genres: [], // Fetch genres if needed
+              genres: [],
             ),
           ),
         );
       },
       child: Container(
         width: 100,
-        // Decreased width of the card
         margin: EdgeInsets.symmetric(horizontal: 4),
-        // Decrease horizontal margin
         decoration: BoxDecoration(
-          color: Color(0xFF343534), // Card background color
+          color: Color(0xFF343534),
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
@@ -309,12 +288,12 @@ class MovieCard extends StatelessWidget {
               child: movie['poster_path'] != null
                   ? Image.network(
                       '$imageUrl${movie['poster_path']}',
-                      height: 150, // Reduced height
-                      width: double.infinity, // Fill the width
-                      fit: BoxFit.cover, // Ensure the image covers the space
+                      height: 150,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
                     )
                   : Container(
-                      height: 150, // Placeholder height
+                      height: 150,
                       color: Colors.grey,
                       child: Icon(Icons.movie, color: Colors.white, size: 50),
                     ),
@@ -328,7 +307,7 @@ class MovieCard extends StatelessWidget {
                     movie['title'] ?? 'No title',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 12, // Adjust font size
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -339,12 +318,10 @@ class MovieCard extends StatelessWidget {
                       Text(
                         '${movie['vote_average']}',
                         style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 10), // Keep text color as white
+                            color: Colors.white70, fontSize: 10), // Keep
                       ),
                       SizedBox(width: 5),
                       Icon(Icons.star, color: Colors.yellow, size: 14),
-                      // Yellow star icon
                     ],
                   ),
                   SizedBox(height: 5),
@@ -352,14 +329,12 @@ class MovieCard extends StatelessWidget {
                     '${movie['release_date']?.substring(0, 4) ?? 'Unknown'}',
                     // Display only the year
                     style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 10), // Adjust font size
+                        color: Colors.white70, fontSize: 10),
                   ),
                   Text(
                     'Runtime: ${movie['runtime'] ?? 'N/A'}',
                     style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 10), // Adjust font size
+                        color: Colors.white70, fontSize: 10),
                   ),
                 ],
               ),
