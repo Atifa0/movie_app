@@ -103,6 +103,48 @@ class FeaturedMovieSection extends StatelessWidget {
 
   FeaturedMovieSection({required this.movie});
 
+  Future<String> fetchCertification() async {
+    final response = await http.get(
+      Uri.parse(
+          'https://api.themoviedb.org/3/movie/${movie['id']}/release_dates?api_key=3393282c6b48f18ca19bcce45e903966'),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body)['results'] as List;
+      final usCertification = data.firstWhere(
+        (element) => element['iso_3166_1'] == 'US',
+        orElse: () => null,
+      );
+
+      if (usCertification != null) {
+        final releaseDates = usCertification['release_dates'] as List;
+        if (releaseDates.isNotEmpty) {
+          return releaseDates.first['certification'] ?? 'NR';
+        }
+      }
+      return 'NR';
+    } else {
+      throw Exception('Failed to load certification');
+    }
+  }
+
+  Future<String> fetchDuration() async {
+    final response = await http.get(
+      Uri.parse(
+          'https://api.themoviedb.org/3/movie/${movie['id']}?api_key=3393282c6b48f18ca19bcce45e903966'),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      int runtime = data['runtime'] ?? 0;
+      int hours = runtime ~/ 60;
+      int minutes = runtime % 60;
+      return '${hours}h ${minutes}m';
+    } else {
+      throw Exception('Failed to load movie duration');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -128,7 +170,7 @@ class FeaturedMovieSection extends StatelessWidget {
         ),
         Center(
           child: Icon(
-            Icons.play_circle_fill, // Example icon
+            Icons.play_circle_fill,
             size: 80,
             color: Colors.white,
           ),
@@ -174,12 +216,50 @@ class FeaturedMovieSection extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 5),
-                    Text(
-                      '${movie['release_date']?.substring(0, 4) ?? 'Unknown'}',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 16,
-                      ),
+                    FutureBuilder<String>(
+                      future: fetchCertification(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Text(
+                            '${movie['release_date']?.substring(0, 4) ?? 'Unknown'} Fetching...',
+                            style:
+                                TextStyle(color: Colors.white70, fontSize: 16),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text(
+                            '${movie['release_date']?.substring(0, 4) ?? 'Unknown'} NR',
+                            style:
+                                TextStyle(color: Colors.white70, fontSize: 16),
+                          );
+                        } else {
+                          return FutureBuilder<String>(
+                            future: fetchDuration(),
+                            builder: (context, durationSnapshot) {
+                              if (durationSnapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Text(
+                                  '${movie['release_date']?.substring(0, 4) ?? 'Unknown'} ${snapshot.data} Fetching...',
+                                  style: TextStyle(
+                                      color: Colors.white70, fontSize: 16),
+                                );
+                              } else if (durationSnapshot.hasError) {
+                                return Text(
+                                  '${movie['release_date']?.substring(0, 4) ?? 'Unknown'} ${snapshot.data} 0h 0m',
+                                  style: TextStyle(
+                                      color: Colors.white70, fontSize: 16),
+                                );
+                              } else {
+                                return Text(
+                                  '${movie['release_date']?.substring(0, 4) ?? 'Unknown'} ${snapshot.data} ${durationSnapshot.data}',
+                                  style: TextStyle(
+                                      color: Colors.white70, fontSize: 16),
+                                );
+                              }
+                            },
+                          );
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -227,7 +307,8 @@ class CategorySection extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     itemCount: movies.length,
                     itemBuilder: (context, index) {
-                      return MovieCard(movie: movies[index]);
+                      final movie = movies[index];
+                      return MovieCard(movie: movie);
                     },
                   ),
           ),
@@ -242,6 +323,48 @@ class MovieCard extends StatelessWidget {
   final String imageUrl = 'https://image.tmdb.org/t/p/w500';
 
   MovieCard({required this.movie});
+
+  Future<String> fetchCertification() async {
+    final response = await http.get(
+      Uri.parse(
+          'https://api.themoviedb.org/3/movie/${movie['id']}/release_dates?api_key=3393282c6b48f18ca19bcce45e903966'),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body)['results'] as List;
+      final usCertification = data.firstWhere(
+        (element) => element['iso_3166_1'] == 'US',
+        orElse: () => null,
+      );
+
+      if (usCertification != null) {
+        final releaseDates = usCertification['release_dates'] as List;
+        if (releaseDates.isNotEmpty) {
+          return releaseDates.first['certification'] ?? 'NR';
+        }
+      }
+      return 'NR';
+    } else {
+      throw Exception('Failed to load certification');
+    }
+  }
+
+  Future<String> fetchDuration() async {
+    final response = await http.get(
+      Uri.parse(
+          'https://api.themoviedb.org/3/movie/${movie['id']}?api_key=3393282c6b48f18ca19bcce45e903966'),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      int runtime = data['runtime'] ?? 0;
+      int hours = runtime ~/ 60;
+      int minutes = runtime % 60;
+      return '${hours}h ${minutes}m';
+    } else {
+      throw Exception('Failed to load movie duration');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -303,38 +426,66 @@ class MovieCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    movie['title'] ?? 'No title',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: 5),
                   Row(
                     children: [
+                      Icon(Icons.star, color: Colors.yellow, size: 14),
+                      SizedBox(width: 5),
                       Text(
                         '${movie['vote_average']}',
-                        style: TextStyle(
-                            color: Colors.white70, fontSize: 10), // Keep
+                        style: TextStyle(color: Colors.white70, fontSize: 10),
                       ),
-                      SizedBox(width: 5),
-                      Icon(Icons.star, color: Colors.yellow, size: 14),
                     ],
                   ),
                   SizedBox(height: 5),
                   Text(
-                    '${movie['release_date']?.substring(0, 4) ?? 'Unknown'}',
-                    // Display only the year
+                    movie['title'] ?? 'No Title',
                     style: TextStyle(
-                        color: Colors.white70, fontSize: 10),
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold),
                   ),
-                  Text(
-                    'Runtime: ${movie['runtime'] ?? 'N/A'}',
-                    style: TextStyle(
-                        color: Colors.white70, fontSize: 10),
+                  SizedBox(height: 5),
+                  FutureBuilder<String>(
+                    future: fetchCertification(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Text(
+                          'Fetching...',
+                          style: TextStyle(color: Colors.white70, fontSize: 10),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text(
+                          'NR',
+                          style: TextStyle(color: Colors.white70, fontSize: 10),
+                        );
+                      } else {
+                        return FutureBuilder<String>(
+                          future: fetchDuration(),
+                          builder: (context, durationSnapshot) {
+                            if (durationSnapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Text(
+                                '${movie['release_date']?.substring(0, 4) ?? 'Unknown'} ${snapshot.data} ...',
+                                style: TextStyle(
+                                    color: Colors.white70, fontSize: 10),
+                              );
+                            } else if (durationSnapshot.hasError) {
+                              return Text(
+                                '${movie['release_date']?.substring(0, 4) ?? 'Unknown'} ${snapshot.data} 0h 0m',
+                                style: TextStyle(
+                                    color: Colors.white70, fontSize: 10),
+                              );
+                            } else {
+                              return Text(
+                                '${movie['release_date']?.substring(0, 4) ?? 'Unknown'} ${snapshot.data} ${durationSnapshot.data}',
+                                style: TextStyle(
+                                    color: Colors.white70, fontSize: 10),
+                              );
+                            }
+                          },
+                        );
+                      }
+                    },
                   ),
                 ],
               ),
