@@ -19,9 +19,9 @@ class MyApp extends StatelessWidget {
       routes: {
         SplashScreen.RouteName: (context) => SplashScreen(),
         Home.RouteName: (context) => Home(),
-        Home_Screen.RouteName : (context) => Home_Screen(),
+        Home_Screen.RouteName: (context) => Home_Screen(),
         Search_Screen.RouteName: (context) => Search_Screen(),
-        Browse.RouteName: (context) => Browse(),
+        BrowseCategoryScreen.RouteName: (context) => BrowseCategoryScreen(),
         WatchList.RouteName: (context) => WatchList(),
       },
     );

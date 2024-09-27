@@ -28,7 +28,6 @@ class _Home extends State<Home> {
         },
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Color(0xffFFA90A),
-        // Color of the selected item (icon and label)
         unselectedItemColor: Color(0xffC6C6C6),
 
         items: [
@@ -67,16 +66,15 @@ class _Home extends State<Home> {
   Widget buildPage(int index) {
     switch (index) {
       case 0:
-        return Home_Screen(); // Page for the task list
+        return Home_Screen();
       case 1:
-        return Search_Screen(); // Page for settings
+        return Search_Screen();
       case 2:
-        return Browse(); // Page for settings
+        return BrowseCategoryScreen();
       case 3:
-        return WatchList(); // Page for settings
+        return WatchList();
       default:
-        return Center(
-            child: Text('')); // Default case in case of an unexpected index
+        return Center(child: Text(''));
     }
   }
 }
