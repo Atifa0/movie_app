@@ -22,9 +22,9 @@ class MovieDetailScreen extends StatefulWidget {
     required this.posterPath,
     required this.releaseDate,
     required this.rating,
+    required List genres,
     required this.runtime,
     required this.actors,
-    required List genres,
   });
 
   @override
@@ -36,12 +36,15 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
   String errorMessage = '';
   List<dynamic> similarMovies = [];
   List<String> genres = [];
+  String certification = '';
+  int runtime = 0;
 
   @override
   void initState() {
     super.initState();
     fetchMovieDetails();
     fetchSimilarMovies();
+    fetchMovieCertification();
   }
 
   Future<void> fetchMovieDetails() async {
@@ -57,6 +60,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
         setState(() {
           genres =
               List<String>.from(data['genres'].map((genre) => genre['name']));
+          runtime = data['runtime']; // Get runtime from the API response
         });
       } else {
         setState(() {
@@ -70,6 +74,43 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     } finally {
       setState(() {
         isLoading = false;
+      });
+    }
+  }
+
+  Future<void> fetchMovieCertification() async {
+    final String apiKey = '3393282c6b48f18ca19bcce45e903966';
+    final url =
+        'https://api.themoviedb.org/3/movie/${widget.movieId}/release_dates?api_key=$apiKey';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final results = data['results'] as List;
+
+        // Extract certification for US
+        final usCertification = results.firstWhere(
+            (element) => element['iso_3166_1'] == 'US',
+            orElse: () => null);
+
+        if (usCertification != null) {
+          final releaseDates = usCertification['release_dates'] as List;
+          if (releaseDates.isNotEmpty) {
+            setState(() {
+              certification = releaseDates[0]['certification'];
+            });
+          }
+        }
+      } else {
+        setState(() {
+          errorMessage = 'Failed to load certification';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = 'An error occurred: $e';
       });
     }
   }
@@ -96,6 +137,21 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
         errorMessage = 'An error occurred: $e';
       });
     }
+  }
+
+  // Format release year from releaseDate
+  String formatReleaseYear(String releaseDate) {
+    if (releaseDate.isNotEmpty) {
+      return releaseDate.split('-').first;
+    }
+    return 'Unknown';
+  }
+
+  // Format runtime in hours and minutes
+  String formatDuration(int runtime) {
+    int hours = runtime ~/ 60;
+    int minutes = runtime % 60;
+    return '${hours}h ${minutes}m';
   }
 
   @override
@@ -141,13 +197,52 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                         ),
                         Padding(
                           padding: EdgeInsets.all(16.0),
-                          child: Text(
-                            widget.title.isEmpty ? 'Loading...' : widget.title,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Movie title
+                              Text(
+                                widget.title.isEmpty
+                                    ? 'Loading...'
+                                    : widget.title,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Text(
+                                    formatReleaseYear(widget.releaseDate),
+                                    style: TextStyle(
+                                      color: Color(0xffb5b4b4),
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+
+                                  // PG Rating (Certification)
+                                  if (certification.isNotEmpty)
+                                    Text(
+                                      certification,
+                                      style: TextStyle(
+                                        color: Color(0xffb5b4b4),
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  SizedBox(width: 10),
+
+                                  Text(
+                                    formatDuration(runtime),
+                                    style: TextStyle(
+                                      color: Color(0xffb5b4b4),
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                         Padding(
@@ -164,7 +259,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                                         fit: BoxFit.cover,
                                       )
                                     : Container(
-                                        height: 180, color: Colors.grey[800]),
+                                        height: 180, color: Color(0xff282a2b)),
                               ),
                               SizedBox(width: 16),
                               Expanded(
@@ -172,46 +267,14 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(height: 10),
-                                    Row(
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.all(16.0),
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                widget.runtime.isNotEmpty
-                                                    ? widget.runtime
-                                                    : '',
-                                                style: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Text(
-                                          widget.releaseDate.isNotEmpty
-                                              ? widget.releaseDate
-                                                  .split('-')
-                                                  .first
-                                              : '',
-                                          style: TextStyle(
-                                            color: Colors.grey,
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 10),
                                     Wrap(
                                       spacing: 8.0,
                                       children: genres.map((genre) {
                                         return Chip(
                                           label: Text(
                                             genre,
-                                            style:
-                                                TextStyle(color: Colors.white),
+                                            style: TextStyle(
+                                                color: Color(0xffcbcbcb)),
                                           ),
                                           backgroundColor: Color(0xff121312),
                                           shape: RoundedRectangleBorder(
@@ -223,14 +286,6 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                                           ),
                                         );
                                       }).toList(),
-                                    ),
-                                    SizedBox(height: 10),
-                                    Text(
-                                      'Overview',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                      ),
                                     ),
                                     SizedBox(height: 10),
                                     Text(
@@ -281,7 +336,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                                   'More Like This',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 20,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -290,7 +345,8 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                                     ? MoreLikeThisSection(movies: similarMovies)
                                     : Text(
                                         'No similar movies found',
-                                        style: TextStyle(color: Colors.white),
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 18),
                                       ),
                               ],
                             ),

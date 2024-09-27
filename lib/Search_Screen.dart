@@ -102,7 +102,7 @@ class _Search_ScreenState extends State<Search_Screen> {
                     child: Container(
                       padding: EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
-                        color: Colors.grey[800],
+                        color: Color(0xff514f4f),
                         borderRadius: BorderRadius.circular(30),
                         border: Border.all(color: Colors.white, width: 1),
                       ),
@@ -112,12 +112,14 @@ class _Search_ScreenState extends State<Search_Screen> {
                           SizedBox(width: 10),
                           Expanded(
                             child: TextField(
-                              style: TextStyle(color: Colors.white),
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 14),
                               onSubmitted: _searchMovies,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
                                 hintText: 'Search',
-                                hintStyle: TextStyle(color: Colors.grey[500]),
+                                hintStyle: TextStyle(
+                                    color: Colors.white, fontSize: 14),
                               ),
                             ),
                           ),
@@ -141,8 +143,8 @@ class _Search_ScreenState extends State<Search_Screen> {
                               SizedBox(height: 20),
                               Text(
                       'No movies found',
-                                style:
-                                    TextStyle(color: Colors.grey, fontSize: 18),
+                                style: TextStyle(
+                                    color: Color(0xabffffff), fontSize: 13),
                               ),
                   ],
                 ),
