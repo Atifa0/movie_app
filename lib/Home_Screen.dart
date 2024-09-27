@@ -388,7 +388,8 @@ class MovieCard extends StatelessWidget {
         );
       },
       child: Container(
-        width: 100,
+        width: 120,
+        height: 140,
         margin: EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
           color: Color(0xFF343534),

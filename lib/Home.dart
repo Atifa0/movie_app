@@ -70,7 +70,7 @@ class _Home extends State<Home> {
       case 1:
         return Search_Screen();
       case 2:
-        return Browse();
+        return BrowseCategoryScreen();
       case 3:
         return WatchList();
       default:
